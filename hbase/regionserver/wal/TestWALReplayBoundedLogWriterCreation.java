@@ -33,7 +33,13 @@ public class TestWALReplayBoundedLogWriterCreation extends TestWALReplay {
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    TestWALReplay.setUpBeforeClass();
+    Configuration conf = TEST_UTIL.getConfiguration();
+    conf.set(WALFactory.WAL_PROVIDER, "filesystem");
+    conf.setInt("dfs.client.block.recovery.retries", 2);
+    TEST_UTIL.startMiniCluster(3);
+    Path hbaseRootDir = TEST_UTIL.getDFSCluster().getFileSystem().makeQualified(new Path("/hbase"));
+    LOG.info("hbase.rootdir=" + hbaseRootDir);
+    CommonFSUtils.setRootDir(conf, hbaseRootDir);
     TEST_UTIL.getConfiguration().setBoolean(WALSplitter.SPLIT_WRITER_CREATION_BOUNDED, true);
   }
 }

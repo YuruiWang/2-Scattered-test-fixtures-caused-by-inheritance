@@ -42,7 +42,11 @@ public class TestWALReplay extends AbstractTestWALReplay {
   public static void setUpBeforeClass() throws Exception {
     Configuration conf = AbstractTestWALReplay.TEST_UTIL.getConfiguration();
     conf.set(WALFactory.WAL_PROVIDER, "filesystem");
-    AbstractTestWALReplay.setUpBeforeClass();
+    conf.setInt("dfs.client.block.recovery.retries", 2);
+    TEST_UTIL.startMiniCluster(3);
+    Path hbaseRootDir = TEST_UTIL.getDFSCluster().getFileSystem().makeQualified(new Path("/hbase"));
+    LOG.info("hbase.rootdir=" + hbaseRootDir);
+    CommonFSUtils.setRootDir(conf, hbaseRootDir);
   }
 
   @Override
